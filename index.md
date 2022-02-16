@@ -3,4 +3,6 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: home
+entries_layout: grid
+classes: wide # Makes the grid tiles wider
 ---

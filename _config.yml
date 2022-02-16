@@ -18,22 +18,77 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Václav Volhejn's homepage
+title: Václav Volhejn's page
+subtitle: "I made this."
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Some projects I've worked on over the years.
+  Some projects I've worked on over the years.  
 # line in _config.yml. It will appear in your document head meta (for
 # Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb
-github_username:  vvolhejn
+github_username: vvolhejn
 
 # Build settings
-theme: minima
-# theme: jekyll-theme-dinky
+theme: minimal-mistakes-jekyll
+minimal_mistakes_skin: "dirt" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise", "default"
+
 plugins:
   - jekyll-feed
+
+site.locale: en-GB
+
+author:
+  # name     : "Václav Volhejn"
+  # avatar   : "/assets/images/bio-photo.jpg"
+  bio      : "I study computer science at ETH Zürich. Also, I like music."
+  location : "Zürich, Switzerland"
+
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/vvolhejn"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/vaclav-volhejn/"
+
+date_format: "%B %Y"
+# https://www.shortcutfoo.com/app/dojos/ruby-date-format-strftime/cheatsheet
+
+# Front matter defaults
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      # read_time: true
+      # comments: true
+      # share: true
+      related: true
+      show_date: true
+
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+
+  # collections (what does this do?)
+  # _foo
+  - scope:
+      path: ""
+      type: foo
+    values:
+      layout: single
+
+atom_feed:
+  hide: true
 
 # Exclude from processing.
 # The following items will not be processed, by default.
