@@ -13,7 +13,7 @@ header:
 
 Hi! I'm Václav \[vah-tslav\], but my friends usually call me Vašek \[vashek\]. Or Váša. Czech names are weird like that.
 
-If you want to know about the work I think increases my hireability, please refer to [my CV](https://raw.githubusercontent.com/vvolhejn/cv/master/cv.pdf).
+If you want to know about the work I think increases my hireability, please refer to [my LinkedIn](https://www.linkedin.com/in/vaclav-volhejn/).
 
 For a less formal bio: I'm a Czech boy who grew up in Prague.
 I've liked computers and programming for as long as I can remember.
