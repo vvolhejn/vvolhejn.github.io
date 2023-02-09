@@ -43,8 +43,8 @@ site.locale: en-GB
 
 author:
   # name     : "Václav Volhejn"
-  # avatar   : "/assets/images/bio-photo.jpg"
-  bio      : "I study computer science at ETH Zürich. Also, I like music."
+  avatar   : "/assets/images/portret-zmrzlina-20220801-crop.jpg"
+  bio      : "I love starting new projects. Sometimes I even finish them."
   location : "Zürich, Switzerland"
 
   links:
