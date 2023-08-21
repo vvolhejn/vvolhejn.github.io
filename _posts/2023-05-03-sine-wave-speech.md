@@ -28,5 +28,7 @@ Check out [this video](https://www.youtube.com/watch?v=GCtTtKKAhyE) for a longer
 
 I stumbled upon sine wave speech accidentally when researching something for my [Master's thesis](/2022/09/21/msc-thesis.html)
 and thought it's really cool.
-But to my surprise, no Python implementations were around! The only implementation I found was one by Dan Ellis from 1996, from before I was born!
+But to my surprise, no Python implementations were around: the only implementation I found was one by Dan Ellis from 1996, from before I was born!
 I wanted to provide a modern implementation for people who'd want to play around with this cool effect.
+
+I later built upon this library with [sinewavespeech.com](https://sinewavespeech.com).
