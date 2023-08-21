@@ -23,8 +23,9 @@ where you design and implement algorithms on a tight time budget.
 Then I started studying computer science at Charles University in Prague,
 where I got more interested in machine learning (like many CS students).
 Now for my Master's degree I went to ETH Zürich to study both ML and algorithms further.
-I'll be done in the summer of 2022 and I haven't decided what to do afterwards,
-which is both exciting and scary.
+I handed in [my thesis]({% post_url 2022-09-01-msc-thesis %}) in the summer of 2022.
+After that, I started working at [Lakera](https://www.lakera.ai/), an AI Safety startup
+here in Zürich.
 
 I also really like music. What I mean by that is mainly that I follow a lot of
 bands, read/watch album reviews and own several t-shirts with band names on
