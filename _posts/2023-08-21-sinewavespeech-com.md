@@ -71,3 +71,37 @@ But it's clear that these drops wouldn't fit into an Instagram post or a Tweet.
 And that, finally, brings me to [sinewavespeech.com](https://sinewavespeech.com):
 I already had the Python library for SWS and I wanted to try presenting the concept with a unique standalone website.
 Then I had the idea of switching between the two versions of the audio using scrolling, and things clicked.
+
+## How does this work technically?
+
+My implementation is based on Matlab [code by Dan Ellis](https://www.ee.columbia.edu/~dpwe/resources/matlab/sws/),
+code which is older than me (1994)!
+I started by translating the code to Python without really understanding what it does.
+I'm not an expert on digital signal processing and I don't understand the math perfectly, but the basic idea is to use Linear Predictive Coding (LPC).
+
+{% include figure image_path="/assets/images/sine-wave-speech/lpc-diagram.png" alt="A diagram of LPC" caption="
+The LPC model, reprinted from [this article](https://ccrma.stanford.edu/~hskim08/lpc/).
+Notice the source and signal plots are in the time domain (x-axis = time), but the filter is shown in the frequency domain (x-axis = frequency).
+The frequencies where the filter peaks is the ones we use for sine wave speech.
+" %}
+
+LPC is a technique that models speech as a filter applied to a simple source signal.
+This filter changes over time, and if it changes just right, it produces speech.
+Given some audio, you can compute how the LPC filter should change over time to produce that audio.
+
+To get sine wave speech, you start by computing the LPC filter coefficients for each small chunk of audio (I used 32ms).
+Then instead of using it to reconstruct the original audio,
+you look for the resonance frequencies, the "peaks" of the filter – see the image above.
+You then take the 4 frequencies that form the biggest peaks and use those as the frequencies of your 4 sine waves.
+You can also infer how loud the sine wave should be at that time based on the peaks' heights.
+
+Once you've done this for every chunk of audio, you synthesize the sine wave speech version by playing sine waves at the frequencies and volumes that you've computed.
+
+For a more detailed introduction to LPC, check out [this tutorial](https://ccrma.stanford.edu/~hskim08/lpc/).
+
+## Misc
+
+I used [Descript](https://descript.com) to record and edit the audio, and filtered it using their "Studio Sound" feature.
+The tool also allows you to export subtitles in .srt format, which is how I got the subtitles on https://www.sinewavespeech.com/.
+
+I also stumbled upon [this site](http://www.columbia.edu/~remez/musical-and-poetic-sine-wave-speech.html) where they experiment with quantizing sine wave speech to the frequencies you can play on a piano, so that you can turn your voice into something musical(-ish).
