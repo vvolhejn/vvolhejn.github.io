@@ -14,6 +14,9 @@ header:
 If you've arrived here through the About link on said website, welcome! I'm Václav Volhejn and this is my personal site.
 [Here's](/about/) more about me.
 
+The code is available [here](https://github.com/vvolhejn/sine_wave_speech/).
+The repo contains both the website and the Python library I made to create the sine wave speech.
+
 ## What's sine wave speech?
 
 Although it wasn't termed sine wave speech then, the concept was introduced in a widely-cited 1981 [paper by Robert E. Remez et al.](https://www.science.org/doi/10.1126/science.7233191)
