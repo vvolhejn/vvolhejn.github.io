@@ -26,7 +26,7 @@ This is a really surprising effect: after you hear a few before-and-after exampl
 the originally unintelligible sine wave speech becomes easy to follow.
 Check out [this video](https://www.youtube.com/watch?v=GCtTtKKAhyE) for a longer example.
 
-I stumbled upon sine wave speech accidentally when researching something for my [Master's thesis](/2022/09/21/msc-thesis.html)
+I stumbled upon sine wave speech accidentally when researching something for my [Master's thesis]({% post_url 2022-09-01-msc-thesis %})
 and thought it's really cool.
 But to my surprise, no Python implementations were around: the only implementation I found was one by Dan Ellis from 1996, from before I was born!
 I wanted to provide a modern implementation for people who'd want to play around with this cool effect.

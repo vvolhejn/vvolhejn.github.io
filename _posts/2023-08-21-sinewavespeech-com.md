@@ -45,7 +45,7 @@ Apparently, researchers still aren't sure how biological motion perception works
 
 ## Why did you make [sinewavespeech.com](https://sinewavespeech.com)?
 
-I stumbled upon sine wave speech accidentally when researching something for my [Master's thesis](/2022/09/21/msc-thesis.html)
+I stumbled upon sine wave speech accidentally when researching something for my [Master's thesis]({% post_url 2022-09-01-msc-thesis %})
 and thought it was really cool.
 
 But to my surprise, no Python implementations were around: the only implementation I found was one by Dan Ellis from 1996, from before I was born!

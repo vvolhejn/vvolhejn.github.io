@@ -1,7 +1,7 @@
 ---
 layout: single
 title:  "Master Thesis: Accelerating Neural Audio Synthesis"
-date:   2022-09-21 00:00:00 +0100
+date:   2022-09-01 00:00:00 +0100
 categories:
 header:
   teaser: /assets/images/msc-thesis-thumbnail.webp
