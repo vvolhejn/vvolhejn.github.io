@@ -1,7 +1,7 @@
 ---
 layout: single
 title:  "Spacetime Map"
-date:   2023-11-25 00:00:00 +0100
+date:   2023-11-25 05:00:00 +0100
 categories:
 header:
   teaser: /assets/images/spacetime-map/thumbnail.png
