@@ -15,8 +15,8 @@ and the code lives [here](https://github.com/vvolhejn/spacetime-maps).
 
 Update: Later I also posted on the webapp [on Hacker News](https://news.ycombinator.com/item?id=39808215) to promote [the video](/2024/03/24/spacetime-maps-video.html) and the post made it to the front page.
 I guess I should have done that sooner because it gave me useful feedback about what people like and what they find confusing.
-But it only sent very few people to the YouTube video, so in that sense it wasn't a success.
-Lesson learned: post sooner.
+But it only sent very few people to the YouTube video: about 13k people opened the webapp but only 55 of those (0.4%) clicked the video link from there.
+So from the marketing perspective, it wasn't a success. Lesson re-learned: post sooner, learn stuff.
 
 {% include figure image_path="/assets/images/spacetime-maps/new-york.png" caption="
 New York as a spacetime map.
