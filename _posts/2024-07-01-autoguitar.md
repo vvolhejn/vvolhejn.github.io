@@ -117,3 +117,58 @@ can just look up $$\hat{s}(f)$$" and turn the motor to that rotation.
 Notice that since there is no feedback loop any more, we no longer need the
 pickup! We only need it at startup, because we don't know what frequency the
 guitar started at – or, equivalently, what is the initial rotation of the motor.
+
+# What's next?
+
+This is the state of the guitar in July 2024. It already works well, but there
+are still some issues:
+
+## Slow tuning
+
+The tuning motor is rather slow: tuning by an octave takes maybe 500 ms. The
+solution is clear – use a stronger motor. That, however, does have the
+disadvantage of increasing the risk of popping the string accidentally. The
+current motor is not strong enough to pop the string by sheer force, so even if
+I introduce a bug, the consequences aren't that bad. With a stronger motor, I'd
+likely go through many more strings.
+
+## Frequency range
+
+The range is only about one octave, because then the strings start popping. And
+if we tune the strings much lower than they're meant to be, they sound bad.
+
+This could be solved by having multiple strings in parallel. After all, this is
+how the issue is solved in a regular guitar. Being able to tune a string one
+octave up corresponds to having 12 frets on a string, so the single-string range
+is actually not too bad.
+
+## Hardware slack
+
+After implementing model-based tuning, I noticed the guitar sounds out-of-tune.
+I thought this might be an issue with how I'm fitting the data, but when I
+measured carefully, I discovered this pattern:
+
+{% include figure image_path="/assets/images/autoguitar/hardware-slack.png" caption="
+The steps–frequency mapping depends on whether you're tuning from a lower or higher frequency." %}
+
+I had the guitar play a scale up and then back down, and noticed that the data
+is very consistent when the scale is being played in the same direction, but
+there is a clear difference between the two directions! Namely, when the scale
+is going up – meaning we're winding the string up – the frequency is _lower_
+than if we reach the same motor position when we're going down!
+
+This is due to some hardware slack. The string likely has some kind of
+"momentum" due to the friction coming from the bends on the two sides. That
+means it doesn't fully go to the "ideal frequency" that should be reached
+according to physics, and the offset depends on what the previous frequency was.
+
+## Computational power
+
+One of the bottlenecks is that pitch detection is comptuationally expensive for
+the Raspberry Pi. If I had more accurate and lower-latency pitch detection, I
+could hopefully go back to the proportional controller and discard the fancy
+model-based tuning.
+
+This would solve the hardware slack issue because then we wouldn't rely on the
+model being accurate – the proportional controller would get it to the correct
+frequency, no matter what.
