@@ -172,3 +172,16 @@ model-based tuning.
 This would solve the hardware slack issue because then we wouldn't rely on the
 model being accurate – the proportional controller would get it to the correct
 frequency, no matter what.
+
+I realized this is not too difficult to solve: simply offload _all_ computation
+onto my laptop, which is orders of magnitude more powerful. The Raspberry Pi
+would only be used as a dumb controller that receives instructions from the
+laptop. We can do this by running a simple server on the Pi that we can send
+commands to, like "turn the motor by 50 steps". To receive the input from the
+audio interface and the MIDI keyboard, simply connect them to the laptop instead
+of the Pi.
+
+On my WiFi, this introduces about 10ms of latency. It could likely be lower if I
+used an ethernet cable to connect the Pi with the laptop. For real-time musical
+applications, the lower latency the better, but as a rule of thumb, below 50 ms
+is acceptable, so this is ok.
