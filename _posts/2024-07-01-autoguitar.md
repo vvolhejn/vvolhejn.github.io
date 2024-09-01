@@ -5,6 +5,7 @@ date:   2024-07-01 00:00:00 +0100
 categories:
 header:
   teaser: /assets/images/autoguitar/thumbnail.jpg
+katex: true
 ---
 
 A robotic stringed instrument: one motor tunes the string, and another one
@@ -71,14 +72,48 @@ poor Raspberry Pi and you need to take a fairly large chunk of audio (~100 ms)
 for the measurements to be stable. This leads to a slow feedback loop, meaning
 delays and overshooting.
 
-An alternative is to use a model-based approach: we know how strings work, so if
-we're told "go from 150 Hz to 200 Hz", we could compute how much to turn the
-tuner without
+An alternative is to use a model-based approach: we know the physics of strings,
+so if we receive an instruction like "go from 150 Hz to 200 Hz", we could
+compute precisely how much to turn the motor to get to that frequency, without
+having to use the feedback loop.
 
-# Fancy model-based tuning
+Here is a plot of the string's frequency as a function of how many steps the
+motor has been turned, relative to an arbitrary zero-point.
 
+{% include figure image_path="/assets/images/autoguitar/240512-steps-vs-hz-raw.png" caption="" %}
 
+Looks like a simple linear relationship. This is what we get when we fit a
+linear regression model to the data:
 
-# What's next?
+{% include figure image_path="/assets/images/autoguitar/240512-steps-vs-hz-linear.png" caption="" %}
 
-This is the state of the guitar from July 2024.
+Not bad, but you can see how the estimatated frequency is too low on the sides,
+and too high in the center. And that's not due to noise: linear regression is
+actually not the correct model!
+
+That's because [according to
+physics](https://en.wikipedia.org/wiki/Mersenne%27s_laws), the frequency of the
+string is actually proportional to the _square root_ of the stretching force,
+and our model assumes it's proportional to the force itself (=the number of
+steps the motor was turned).
+
+We can still model this using linear regression. Our original linear model is
+$$f = as + b$$, where $$f$$ is the frequency, $$s$$ is the number of steps and
+$$a$$ and $$b$$ are the parameters we fit to the data.
+
+Now we want $$f$$ to be a function of $$\sqrt{s}$$, which makes the model
+non-linear in $$s$$. But what we can do is instead take the square and predict
+$$f^2$$ as a function of $$s$$. We can then simply take the square root of the
+prediction to get $$f$$. This is the fit we get:
+
+{% include figure image_path="/assets/images/autoguitar/240512-steps-vs-hz-correct.png" caption="" %}
+
+Much better! We can now use this model for tuning. By inverting the model we get
+a function from frequencies $$f$$ to motor positions $$\hat{s}(f)$$.
+Essentially, this means "if you want to get frequency $$f$$, you should turn the
+motor to $$\hat{s}(f)$$". So now when we press a key on the MIDI controller, we
+can just look up $$\hat{s}(f)$$" and turn the motor to that rotation.
+
+Notice that since there is no feedback loop any more, we no longer need the
+pickup! We only need it at startup, because we don't know what frequency the
+guitar started at – or, equivalently, what is the initial rotation of the motor.
