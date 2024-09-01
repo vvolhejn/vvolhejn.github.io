@@ -36,6 +36,10 @@ repository: vvolhejn/vvolhejn.github.io
 remote_theme: "mmistakes/minimal-mistakes@4.24.0"
 minimal_mistakes_skin: "dark" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise", "default"
 
+kramdown:
+  # See https://www.xuningyang.com/blog/2021-01-11-katex-with-jekyll/
+  math_engine: katex
+
 plugins:
   - jekyll-feed
   - jekyll-include-cache
