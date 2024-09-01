@@ -8,7 +8,7 @@
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'bundle exec jekyll serve'. If you change this file, please restart the server process.
 #
-# If you need help with YAML syntax, here are some quick references for you: 
+# If you need help with YAML syntax, here are some quick references for you:
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 #
@@ -22,13 +22,14 @@ title: Václav Volhejn's page
 subtitle: "I made this."
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Some projects I've worked on over the years.  
+  Some projects I've worked on over the years.
 # line in _config.yml. It will appear in your document head meta (for
 # Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb
 github_username: vvolhejn
+repository: vvolhejn/vvolhejn.github.io
 
 # Build settings
 # theme: minimal-mistakes-jekyll
@@ -43,9 +44,9 @@ site.locale: en-GB
 
 author:
   # name     : "Václav Volhejn"
-  avatar   : "/assets/images/portret-zmrzlina-20220801-crop.jpg"
-  bio      : "I love starting new projects. Sometimes I even finish them."
-  location : "Zürich, Switzerland"
+  avatar: "/assets/images/portret-zmrzlina-20220801-crop.jpg"
+  bio: "I love starting new projects. Sometimes I even finish them."
+  location: "Zürich, Switzerland"
 
   links:
     - label: "GitHub"
@@ -91,7 +92,6 @@ defaults:
 
 atom_feed:
   hide: true
-
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
