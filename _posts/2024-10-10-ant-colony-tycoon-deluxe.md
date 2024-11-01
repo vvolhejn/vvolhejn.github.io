@@ -12,7 +12,10 @@ Control an ant colony by placing pheromone trails on the ground that ants follow
 
 <img src="/assets/2024-10-10/gameplay.webp" alt="Ant Colony Tycoon Deluxe" style="width: 100%;"/>
 
-Play it [here](https://allemansratten.itch.io/ant-colony-tycoon-deluxe), the source code is [here](https://github.com/allemansratten/AntColonyTycoonDeluxe).
+**[Play it online on Itch.](https://allemansratten.itch.io/ant-colony-tycoon-deluxe)**
+
+You can also check out [the game's Ludum Dare page](https://ldjam.com/events/ludum-dare/56/ant-colony-tycoon-deluxe),
+or the [source code](https://github.com/allemansratten/AntColonyTycoonDeluxe).
 
 When [we](https://github.com/allemansratten/) design games for game jams,
 we always discuss whether we should prefer the game to be [experimental and innovative]({% post_url 2020-04-21-overly-fragile-relationships %}) or stick to tried-and-true genres and tropes.
