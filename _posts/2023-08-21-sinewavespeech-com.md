@@ -9,9 +9,12 @@ header:
   teaser: /assets/images/sine-wave-speech/sinewavespeech-com-thumbnail.png
 ---
 
-[sinewavespeech.com](https://sinewavespeech.com) is an interactive website for exploring how human speech can be reduced *extremely* and still be intelligible.
+An interactive website for exploring how human speech can be reduced *extremely* and still be intelligible.
 
-If you've arrived here through the About link on said website, welcome! I'm Václav Volhejn and this is my personal site.
+_Update 2024: This project can be found under [sinewavespeech.com/explanation/](https://sinewavespeech.com/explanation/)._
+_I later created a variant where you can play with the effect in real time, and [sinewavespeech.com/](https://sinewavespeech.com/) now points there._
+
+If you've arrived here through the link on said website, welcome! I'm Václav Volhejn and this is my personal site.
 [Here's](/about/) more about me.
 
 The code is available [here](https://github.com/vvolhejn/sine_wave_speech/).
@@ -43,7 +46,7 @@ Similarly, it's just a few sine waves, but we recognize they encode speech.
 
 Apparently, researchers still aren't sure how biological motion perception works, and its [Wikipedia page](https://en.wikipedia.org/wiki/Biological_motion_perception) has a lot more formulas than one would expect.
 
-## Why did you make [sinewavespeech.com](https://sinewavespeech.com)?
+## Why did you make [sinewavespeech.com/explanation/](https://sinewavespeech.com/explanation/)?
 
 I stumbled upon sine wave speech accidentally when researching something for my [Master's thesis]({% post_url 2022-09-01-msc-thesis %})
 and thought it was really cool.
@@ -71,7 +74,7 @@ The cease-and-desist one has formula cars C&D letters on them, and 3D renders of
 In a way, these are anachronisms, since most content is nowadays hosted on social media – said the guy with a personal website.
 But it's clear that these drops wouldn't fit into an Instagram post or a Tweet.
 
-And that, finally, brings me to [sinewavespeech.com](https://sinewavespeech.com):
+And that, finally, brings me to [sinewavespeech.com/explanation/](https://sinewavespeech.com/explanation/):
 I already had the Python library for SWS and I wanted to try presenting the concept with a unique standalone website.
 Then I had the idea of switching between the two versions of the audio using scrolling, and things clicked.
 
@@ -105,6 +108,6 @@ For a more detailed introduction to LPC, check out [this tutorial](https://ccrma
 ## Misc
 
 I used [Descript](https://descript.com) to record and edit the audio, and filtered it using their "Studio Sound" feature.
-The tool also allows you to export subtitles in .srt format, which is how I got the subtitles on https://www.sinewavespeech.com/.
+The tool also allows you to export subtitles in .srt format, which is how I got the subtitles on https://www.sinewavespeech.com/explanation/.
 
 I also stumbled upon [this site](http://www.columbia.edu/~remez/musical-and-poetic-sine-wave-speech.html) where they experiment with quantizing sine wave speech to the frequencies you can play on a piano, so that you can turn your voice into something musical(-ish).
