@@ -8,14 +8,20 @@ header:
 
 <figure>
 	<a href="/assets/images/vv_alps.jpg"><img src="/assets/images/vv_at_home.jpg"></a>
-	<figcaption>January 2024, thanks [Frido](https://frido.ai/) for the photo</figcaption>
+	<figcaption>January 2024, thanks <a href="https://frido.ai/">Frido</a> for the photo</figcaption>
 </figure>
 
 Hi! I'm Václav \[vah-tslav\], but my friends usually call me Vašek \[vashek\]. Or Váša. Czech names are weird like that.
 
-If you want to know about the work I think increases my hireability, please refer to [my LinkedIn](https://www.linkedin.com/in/vaclav-volhejn/).
+<!-- When updating this list, also update _config.yml -->
+* [GitHub](https://github.com/vvolhejn)
+* [X/Twitter](https://x.com/vvolhejn)
+* [TikTok](https://www.tiktok.com/@vvolhejn)
+* [YouTube – Polylog](https://www.youtube.com/@polylogcs)
+* [YouTube – personal](https://www.youtube.com/@vvolhejn)
+* [LinkedIn](https://www.linkedin.com/in/vaclav-volhejn/)
 
-For a less formal bio: I grew up in Prague.
+I grew up in Prague.
 I've liked computers and programming for as long as I can remember.
 This showed in different ways:
 first I got really into competitive programming contests (see CV)
