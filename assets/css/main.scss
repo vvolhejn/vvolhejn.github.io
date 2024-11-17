@@ -1,0 +1,25 @@
+---
+# The front matter must be present.
+---
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+@import "minimal-mistakes"; // main partials
+
+// https://github.com/mmistakes/minimal-mistakes/discussions/1219#discussioncomment-172827
+// Here we're only adjusting the .page container, keeping the font sizing the same in other areas.
+html .page {
+    font-size: 16px;
+  
+    @include breakpoint($medium) {
+      font-size: 18px;
+    }
+  
+    @include breakpoint($large) {
+      font-size: 18px; // default: 20px
+    }
+  
+    @include breakpoint($x-large) {
+      font-size: 18px; // default: 22px
+    }
+  }
+  
