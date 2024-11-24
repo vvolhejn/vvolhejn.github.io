@@ -13,6 +13,7 @@ An interactive website for exploring how human speech can be reduced *extremely*
 
 _Update 2024: This project can be found under [sinewavespeech.com/explanation/](https://sinewavespeech.com/explanation/)._
 _I later created a variant where you can play with the effect in real time, and [sinewavespeech.com/](https://sinewavespeech.com/) now points there._
+_You can read more about that in [this post]({% post_url 2024-11-17-sinewavespeech-com-live %})._
 
 If you've arrived here through the link on said website, welcome! I'm Václav Volhejn and this is my personal site.
 [Here's](/about/) more about me.
