@@ -61,7 +61,7 @@ I intentionally used the vague term "project": MSCHF drops are often fashion-rel
 Sometimes, it's just a [big ol' red boot](https://mschf.com/shop/big-red-boot/).
 
 But drops can also be things like [thisfootdoesnotexist<wbr>.com](https://thisfootdoesnotexist.com/),
-a website for AI-generated feet pics that parodies [thisfootdoesnotexist<wbr>.com](https://thispersondoesnotexist.com/).
+a website for AI-generated feet pics that parodies [thispersondoesnotexist<wbr>.com](https://thispersondoesnotexist.com/).
 The site even comes complete with an art-zine-worthy essay about the dual nature of feet pics.
 
 A drop can also mean printing shirts that illegally use logos of major companies, and [holding a race](https://cdgrandprix.com/)
@@ -109,6 +109,6 @@ For a more detailed introduction to LPC, check out [this tutorial](https://ccrma
 ## Misc
 
 I used [Descript](https://descript.com) to record and edit the audio, and filtered it using their "Studio Sound" feature.
-The tool also allows you to export subtitles in .srt format, which is how I got the subtitles on https://www.sinewavespeech.com/explanation/.
+The tool also allows you to export subtitles in .srt format, which is how I got the subtitles on [sinewavespeech.com/explanation/](https://sinewavespeech.com/explanation/).
 
 I also stumbled upon [this site](http://www.columbia.edu/~remez/musical-and-poetic-sine-wave-speech.html) where they experiment with quantizing sine wave speech to the frequencies you can play on a piano, so that you can turn your voice into something musical(-ish).
