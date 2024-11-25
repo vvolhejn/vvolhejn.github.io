@@ -7,6 +7,7 @@ date:   2024-11-17 00:00:00 +0100
 categories:
 header:
   teaser: /assets/images/sine-wave-speech/sinewavespeech-com-live-thumbnail.png
+mermaid: true
 ---
 
 Turn any sound into music, in real time, in your browser.
@@ -63,6 +64,42 @@ Sadly, it's not easy to run Python in the browser and that meant that I had to t
 The plan was: Use the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) to get detailed control over sound in the browser,
 using an [AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet) that would run the sine wave speech effect in a separate thread.
 The audio effect itself would be written in Rust and [compiled into WebAssembly](https://rustwasm.github.io/book/) so that it can run in the browser.
+
+I used this [tutorial on pitch detection via Rust+wasm](https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio) as a starting point.
+
+# Web Audio API
+
+The [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) is a relatively recent system for controlling audio on the web.
+You can define a complex graph of audio nodes that create, process, and receive audio, just like you would in a digital audio workstation
+or in something like [Max](https://en.wikipedia.org/wiki/Max_(software)).
+
+Our graph is fairly simple. Audio flows into the Sine Wave Speech (SWS) processor either directly from the microphone,
+or from an audio buffer that a user can record first and then loop.
+That's particularly handy if you don't have headphones, because you'd get a feedback loop if you used real-time input.
+
+```mermaid
+flowchart TD
+  microphone[Microphone]
+  recorded[Recorded audio]
+  sws[SWS processor]
+  output[Output]
+  microphone -->|Record| recorded
+  recorded -->|Playback| sws
+  microphone -->|Real-time| sws
+  sws --> output
+```
+
+The older [sinewavespeech.com/explanation/](https://www.sinewavespeech.com/explanation/) uses the Web Audio API more heavily:
+it explicitly controls separate [`OscillatorNode`](https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode)s to generate the individual sine waves.
+For the live version I thought it'd be easier to handle the whole synthesis in Rust directly.
+
+The SWS processor can run our Rust code in a separate thread using an [`AudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet).
+Worklets are wild. You tell a worklet what code to run by calling `audioWorklet.addModule()` and passing in _a URL of a JS file_.
+Of course, this doesn't play nice with bundling, not to mention TypeScript.
+You also need to somehow pass the wasm code to the worklet, because you can't import it from the worklet (AFAIK).
+The whole thing was a headache,
+but luckily Peter Suggate who wrote [the tutorial I used as a reference](https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio)
+had already figured out most of the sharp bits.
 
 # Going real-time with Rust
 

@@ -1,0 +1,23 @@
+{% if page.mermaid %}
+<style>
+  .language-mermaid {
+    display: flex;
+    justify-content: center;
+  }
+</style>
+<script>
+  var config = {
+    startOnLoad: true,
+    theme: "dark",
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+    },
+  };
+  mermaid.initialize(config);
+  window.mermaid.init(
+    undefined,
+    document.querySelectorAll(".language-mermaid")
+  );
+</script>
+{% endif %}
