@@ -113,6 +113,55 @@ I chose to use Rust for a few reasons.
   situation isn't much better there – but it's an argument against JavaScript.
 - Learning: I had never worked with Rust before this so I wanted to see what the hype is about. I also hadn't used WebAssembly.
 
+# I don't know what it does, but I can check that it does it correctly
+
+As mentioned [the previous post]({% post_url 2023-08-21-sinewavespeech-com %}#how-does-this-work-technically),
+my Sine Wave Speech code is based on a Matlab implementation from the 90s.
+With some help from Copilot, I translated it into Python, the language I'm most comfortable with.
+
+This iteration was a new challenge:
+I had never used Rust before so it would be very difficult for me to know if the code is correct.
+This is where unit tests come in particularly handy.
+For simple functions like upsampling a signal, it's easy to write unit tests and figure out what the expected output is.
+But it's a lot trickier to write a unit test for, let's say, a function that returns the [Linear Predictive Coding](https://en.wikipedia.org/wiki/Linear_predictive_coding) coefficients of order _p_ on Hann-windowed frames of audio.
+Especially if, like me, you've never taken a DSP class and you only have a loose idea of what that all actually means.
+
+Luckily, we have the Python implementation which we know works.
+To unit test `fit_lpc()`, we can simply run the Python version of the function on some data
+and store both the input and output in a format like JSON.
+
+I used [MessagePack](https://msgpack.org/index.html) rather than JSON to make the fixture more compact.
+The fixture is mainly a bunch of floats, and for that, JSON is very wasteful because it stores numbers like "508.2762307926977" directly in their decimal representation, which in this case is 17 bytes.
+MessagePack and other binary formats are a lot better because to store a [float32](https://en.wikipedia.org/wiki/Single-precision_floating-point_format) they only use 4 bytes, leading to a file that's ~4x smaller.
+
+The test function then looks something like this:
+
+```rust
+#[test]
+fn test_fit_lpc() {
+    let fixture = read_msgpack_fixture("python_sws_results.msgpack");
+
+    let audio = Array1::from_vec(fixture.audio);
+    let lpc_coefficients = fit_lpc(
+      &audio, fixture.n_waves * 2, fixture.hop_size
+    );
+
+    let epsilon = 1e-2; // allow for some error in the comparison
+    assert_array2_eq(
+      &lpc_coefficients, &fixture.expected_lpc_coefficients, epsilon
+    );
+}
+```
+
+Why do we need to allow for an error in the calculations if we want the Rust code to do _exactly_ the same thing as the Python code?
+First, I used float32 in Rust and float64 in Python, so there's a precision mismatch.
+But we'd need the `epsilon` even if both versions used float64.
+Some subroutines, like finding the eigenvalues of a matrix, are outsourced to the linear algebra libraries of the respective languages, and their implementations will be different.
+
+Even if they were mathematically the same, floating-point arithmetic [is not associative](https://stackoverflow.com/questions/10371857/is-floating-point-addition-and-multiplication-associative),
+so computing the sum of an array can give different results depending on the order of iteration.
+If you're not familiar with the intricacies of floats, I recommend this [introduction video by Jan Misali](https://www.youtube.com/watch?v=dQhj5RGtag0).
+
 _More coming soon._
 
 <!-- ## The Amerustacean Dream
