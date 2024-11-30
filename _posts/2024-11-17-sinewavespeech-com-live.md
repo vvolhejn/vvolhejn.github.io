@@ -8,6 +8,7 @@ categories:
 header:
   teaser: /assets/images/sine-wave-speech/sinewavespeech-com-live-thumbnail.png
 mermaid: true
+katex: true
 ---
 
 Turn any sound into music, in real time, in your browser.
@@ -20,6 +21,8 @@ You can find the source code [on my GitHub](https://github.com/vvolhejn/sine_wav
 About a year before this project, I made [sinewavespeech.com/explanation/](https://sinewavespeech.com/explanation/),
 which demonstrates the effect on a pre-sinewaved recording.
 You can read more about that in [this post]({% post_url 2023-08-21-sinewavespeech-com %}).
+
+In this one, I'll go over the project from different angles, from least to most technical: The UX, the high-level code architecture, and finally, my impressions of Rust for scientific computing.
 
 # UX design
 
@@ -123,7 +126,7 @@ This iteration was a new challenge:
 I had never used Rust before so it would be very difficult for me to know if the code is correct.
 This is where unit tests come in particularly handy.
 For simple functions like upsampling a signal, it's easy to write unit tests and figure out what the expected output is.
-But it's a lot trickier to write a unit test for, let's say, a function that returns the [Linear Predictive Coding](https://en.wikipedia.org/wiki/Linear_predictive_coding) coefficients of order _p_ on Hann-windowed frames of audio.
+But it's a lot trickier to write a unit test for, let's say, a function that returns the [Linear Predictive Coding](https://en.wikipedia.org/wiki/Linear_predictive_coding) coefficients of order $$p$$ on Hann-windowed frames of audio.
 Especially if, like me, you've never taken a DSP class and you only have a loose idea of what that all actually means.
 
 Luckily, we have the Python implementation which we know works.
@@ -162,12 +165,65 @@ Even if they were mathematically the same, floating-point arithmetic [is not ass
 so computing the sum of an array can give different results depending on the order of iteration.
 If you're not familiar with the intricacies of floats, I recommend this [introduction video by Jan Misali](https://www.youtube.com/watch?v=dQhj5RGtag0).
 
+With the Python reference implementation, unit tests, and a little help from [Claude](https://www.anthropic.com/claude), it seems that this would be a breeze. But alas,
+
+# Rust is not there yet
+
+As the [technology-conservative](https://boringtechnology.club/) reader might expect,
+it turns out Rust is not all sunshine and rainbows.
+In particular, Python's scientific computing ecosystem is much more mature than Rust's.
+In Rust's defense, linear algebra routines are not the selling point of the language.
+Nevertheless, I had to jump through more hoops than I expected.
+
+## [Situation: there are 14 competing standards](https://xkcd.com/927/)
+
+When you think about it, NumPy does a lot.
+At its core, there is the n-dimensional array and the convenient interface for vectorized arithmetic, broadcasting and indexing.
+But there's so much on top that doesn't _strictly_ have to do with the array type: "random number generators, linear algebra routines, Fourier transforms, and more".
+
+In Rust, there is the [`ndarray`](https://docs.rs/ndarray/latest/ndarray/) crate, which provides n-dimensional arrays, but not much else.
+The excitement of discovering that there is a [`ndarray::linalg` module](https://docs.rs/ndarray/0.16.1/ndarray/linalg/index.html) goes away quickly when you realize the only thing it implements is matrix multiplication.
+It makes sense in theory: `ndarray` can provide the data type and others can build their scientific tools upon it, similar to how [SciPy](https://scipy.github.io/devdocs/dev/) is built on top of NumPy, but stricter.
+
+So where are these scientific computing crates that build on top of `ndarray`? Let's have a look. I needed to replace two functions from NumPy/SciPy.
+
+The first was [`scipy.linalg.solve_toeplitz`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.solve_toeplitz.html), a function to solve a [Toeplitz system](https://en.wikipedia.org/wiki/Toeplitz_matrix). That's a matrix equation $$Ax = b$$ where $$A$$ is a special kind of matrix, which makes the equation easier to solve.
+I couldn't find any crate that would implement that.
+In the end, I found SciPy's [Cython implementation](https://github.com/scipy/scipy/blob/92d2a8592782ee19a1161d0bf3fc2241ba78bb63/scipy/linalg/_solve_toeplitz.pyx)
+and asked Claude to translate it into Rust, which it [had no problem doing](https://github.com/vvolhejn/sine_wave_speech/blob/472d41c16c1b6114ab6ec4ed08032986913f4df2/wasm_realtime_sws/src/linear_algebra.rs#L45).
+
+The other thing I needed was simple: finding the complex roots of a polynomial.
+Compared to the niche Toeplitz system, I was sure this'd be a walk in the park.
+Alas, I was wrong.
+
+In Python, you'd call `np.roots()`.
+If we look [under the hood](https://github.com/numpy/numpy/blob/v2.1.0/numpy/lib/_polynomial_impl.py#L163-L253), we see that it finds the roots by computing the eigenvalues of a [special matrix](https://en.wikipedia.org/wiki/Companion_matrix) derived from the polynomial.
+This _companion matrix_ has the property that its eigenvalues are exactly the roots of the polynomial.
+
+I searched for "rust polynomial roots", "rust polynomial", "rust eigenvalues" etc. until
+I found [something](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/eig/trait.Eig.html) in `ndarray_linalg`.
+Unfortunately, I couldn't make it find complex eigenvalues, and the documentation didn't help.
+By the way, be sure not to confuse the [`ndarray_linalg`](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/index.html) crate with [`ndarray::linalg`](https://docs.rs/ndarray/latest/ndarray/linalg/index.html), mentioned earlier.
+There are a [few](https://docs.rs/nalgebra-lapack/latest/nalgebra_lapack/struct.Eigen.html)
+[alternatives](https://docs.rs/eigenvalues/latest/eigenvalues/) that I also discarded for one reason or another.
+
+After more searching than I thought I'd need, I struck gold: the [`nalgebra`](https://docs.rs/nalgebra/latest/nalgebra/) crate for linear algebra.
+Amazing! There is a [`.complex_eigenvalues()`](https://docs.rs/nalgebra/latest/nalgebra/base/struct.Matrix.html#method.complex_eigenvalues) method that does exactly what I need,
+and a lot more linear algebra goodies too.
+
+Not so fast though: you can't call this method on your `Array2D` because `nalgebra` does _not_ use `ndarray` under the hood.
+Instead, it has its own, separate type.
+The Rust community has been discussing uniting these [since 2017](https://github.com/anowell/are-we-learning-yet/issues/14) but the discussions seem to have stalled (as of 2024).
+If you want to convert between the two types, you'll need yet another crate, [`nshare`](https://docs.rs/nshare/latest/nshare/), whose only purpose is to define methods that convert between `nalgebra` and `ndarray` types. In the end, we get:
+
+```rust
+pub fn find_roots(coefs: ArrayView1<f32>) -> Array1<Complex<f32>> {
+    let companion_matrix = get_companion_matrix(coefs);  // easy to implement
+    let eigenvalues = companion_matrix.into_nalgebra().complex_eigenvalues();
+    eigenvalues.into_ndarray1()
+}
+```
+
 _More coming soon._
-
-<!-- ## The Amerustacean Dream
-
-Remember how I said that JavaScript is way behind Python when it comes to scientific computing?
-As it turns out, so is Rust (a language that is 20 years younger). Who knew!
- -->
 
 <!-- the iphone silence issue -->
