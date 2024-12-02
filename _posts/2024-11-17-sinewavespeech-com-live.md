@@ -29,7 +29,9 @@ In this one, I'll go over the project from different angles, from least to most 
 > I can already read the criticism, that 'there's no active EQ, no pickup this, it's not versatile'. \*You're\* not versatile.
 
 That's Vulfpeck band leader Jack Stratton talking about their single-knob [Joe Dart bass guitar](https://youtu.be/9eOF7t4HgjE?t=49).
-The musician having less control might seem like a bad thing, but it also means that the maker can ensure the bass sounds good no matter the settings.
+Jack is defending the choice of having only a simple volume knob rather than multiple knobs that would allow you to fine-tune the tone of the bass.
+
+I agree with Jack: the musician having less control might seem like a bad thing, but it also means that the maker can ensure the bass sounds good no matter the settings.
 This is also why I love the [Sausage Fattener](https://youtu.be/jHFzfZl6NQQ?t=63) VST.
 It has two knobs. It makes the sound fat. That's it.
 
@@ -37,7 +39,7 @@ I tried to apply the same less-is-more philosophy to the sine wave speech effect
 I ended up with five parameters:
 - Step size: how short or long the notes are.
 - Number of waves: decompose into this many sine waves.
-- Scale: whether the frequencies get snapped to musical notes, and how restrictive the scale is. More about that later.
+- Scale: whether the frequencies get snapped to musical notes, and how restrictive the scale is. More on that later.
 - Gain: adjust the loudness.
 - Depth: decrease the frequency of the lower sine waves to cover more of the frequency spectrum.
 
@@ -52,11 +54,11 @@ Dear reader, in my defense, I did resist the temptation of adding any of the fol
 - Allowing to record for longer periods of time
 - Uploading audio files
 - Download the processed audio
-- Trimming the recording to a smaller passage
+- Trimming the recording to a shorter passage
 
 If enough people complain about one of these things missing, I might still add it.
-Maybe the way to keep things simple would be adding a simple/advanced mode trigger,
-and hide the more complicated things under advanced mode.
+The way to keep things simple could be adding a simple/advanced mode trigger,
+hiding the more complicated things under advanced mode.
 
 # Code
 
@@ -73,7 +75,7 @@ I used this [tutorial on pitch detection via Rust+wasm](https://www.toptal.com/w
 # Web Audio API
 
 The [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) is a relatively recent system for controlling audio on the web.
-You can define a complex graph of audio nodes that create, process, and receive audio, just like you would in a digital audio workstation
+It's powerful: you can define an arbitrary graph of audio nodes that create, process, and receive audio, just like you would in a digital audio workstation
 or in something like [Max](https://en.wikipedia.org/wiki/Max_(software)).
 
 Our graph is fairly simple. Audio flows into the Sine Wave Speech (SWS) processor either directly from the microphone,
@@ -94,11 +96,13 @@ flowchart TD
 
 The older [sinewavespeech.com/explanation/](https://www.sinewavespeech.com/explanation/) uses the Web Audio API more heavily:
 it explicitly controls separate [`OscillatorNode`](https://developer.mozilla.org/en-US/docs/Web/API/OscillatorNode)s to generate the individual sine waves.
-For the live version I thought it'd be easier to handle the whole synthesis in Rust directly.
+It would've been possible to do that in the live version too, but I thought it'd be easier to handle the whole synthesis in Rust directly
+so that the logic is not scattered between Rust and TypeScript.
 
 The SWS processor can run our Rust code in a separate thread using an [`AudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet).
 Worklets are wild. You tell a worklet what code to run by calling `audioWorklet.addModule()` and passing in _a URL of a JS file_.
-Of course, this doesn't play nice with bundling, not to mention TypeScript.
+Since this bypasses the regular import mechanism, it doesn't play nice with bundling, not to mention TypeScript.
+
 You also need to somehow pass the wasm code to the worklet, because you can't import it from the worklet (AFAIK).
 The whole thing was a headache,
 but luckily Peter Suggate who wrote [the tutorial I used as a reference](https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio)
@@ -116,7 +120,7 @@ I chose to use Rust for a few reasons.
   situation isn't much better there – but it's an argument against JavaScript.
 - Learning: I had never worked with Rust before this so I wanted to see what the hype is about. I also hadn't used WebAssembly.
 
-# I don't know what it does, but I can check that it does it correctly
+# I'm sure this works even though I'm not sure why
 
 As mentioned [the previous post]({% post_url 2023-08-21-sinewavespeech-com %}#how-does-this-work-technically),
 my Sine Wave Speech code is based on a Matlab implementation from the 90s.
@@ -132,6 +136,7 @@ Especially if, like me, you've never taken a DSP class and you only have a loose
 Luckily, we have the Python implementation which we know works.
 To unit test `fit_lpc()`, we can simply run the Python version of the function on some data
 and store both the input and output in a format like JSON.
+Then we check that the Rust code outputs the same thing.
 
 I used [MessagePack](https://msgpack.org/index.html) rather than JSON to make the fixture more compact.
 The fixture is mainly a bunch of floats, and for that, JSON is very wasteful because it stores numbers like "508.2762307926977" directly in their decimal representation, which in this case is 17 bytes.
@@ -157,15 +162,14 @@ fn test_fit_lpc() {
 ```
 
 Why do we need to allow for an error in the calculations if we want the Rust code to do _exactly_ the same thing as the Python code?
-First, I used float32 in Rust and float64 in Python, so there's a precision mismatch.
-But we'd need the `epsilon` even if both versions used float64.
-Some subroutines, like finding the eigenvalues of a matrix, are outsourced to the linear algebra libraries of the respective languages, and their implementations will be different.
+There are multiple separate reasons:
+- I used float32 in Rust and float64 in Python, so there's a precision mismatch.
+- Some subroutines, like finding the eigenvalues of a matrix, are outsourced to the linear algebra libraries of the respective languages, and their implementations will be different.
+- Floating-point arithmetic [is not associative](https://stackoverflow.com/questions/10371857/is-floating-point-addition-and-multiplication-associative),
+  so computing the sum of an array can give different results depending on the order of iteration.
+  If you're not familiar with the intricacies of floats, I recommend this [introduction video by Jan Misali](https://www.youtube.com/watch?v=dQhj5RGtag0).
 
-Even if they were mathematically the same, floating-point arithmetic [is not associative](https://stackoverflow.com/questions/10371857/is-floating-point-addition-and-multiplication-associative),
-so computing the sum of an array can give different results depending on the order of iteration.
-If you're not familiar with the intricacies of floats, I recommend this [introduction video by Jan Misali](https://www.youtube.com/watch?v=dQhj5RGtag0).
-
-With the Python reference implementation, unit tests, and a little help from [Claude](https://www.anthropic.com/claude), it seems that this would be a breeze. But alas,
+With the Python reference implementation, unit tests, and a little help from [Claude](https://www.anthropic.com/claude), it seems that this would be a breeze. But alas:
 
 # Rust is not there yet
 
@@ -179,16 +183,36 @@ Nevertheless, I had to jump through more hoops than I expected.
 
 When you think about it, NumPy does a lot.
 At its core, there is the n-dimensional array and the convenient interface for vectorized arithmetic, broadcasting and indexing.
-But there's so much on top that doesn't _strictly_ have to do with the array type: "random number generators, linear algebra routines, Fourier transforms, and more".
+But there's so much on top that doesn't _strictly_ have to do with the array type: random number generators, linear algebra routines, Fourier transforms, and more.
 
 In Rust, there is the [`ndarray`](https://docs.rs/ndarray/latest/ndarray/) crate, which provides n-dimensional arrays, but not much else.
 The excitement of discovering that there is a [`ndarray::linalg` module](https://docs.rs/ndarray/0.16.1/ndarray/linalg/index.html) goes away quickly when you realize the only thing it implements is matrix multiplication.
-It makes sense in theory: `ndarray` can provide the data type and others can build their scientific tools upon it, similar to how [SciPy](https://scipy.github.io/devdocs/dev/) is built on top of NumPy, but stricter.
+It makes sense in theory: `ndarray` can provide the data type and others can build their scientific tools upon it, similar to how [SciPy](https://scipy.github.io/devdocs/dev/) is built on top of NumPy, but with a better separation of concerns.
 
 So where are these scientific computing crates that build on top of `ndarray`? Let's have a look. I needed to replace two functions from NumPy/SciPy.
 
-The first was [`scipy.linalg.solve_toeplitz`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.solve_toeplitz.html), a function to solve a [Toeplitz system](https://en.wikipedia.org/wiki/Toeplitz_matrix). That's a matrix equation $$Ax = b$$ where $$A$$ is a special kind of matrix, which makes the equation easier to solve.
-I couldn't find any crate that would implement that.
+The first was [`scipy.linalg.solve_toeplitz`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.solve_toeplitz.html), a function to solve a [Toeplitz system](https://en.wikipedia.org/wiki/Toeplitz_matrix). That's a matrix equation $$Ax = y$$ where $$A$$ is a special kind of matrix, which makes the equation easier to solve.
+It looks something like this:
+
+$$
+\begin{bmatrix}
+a & b & c & d & e \\
+f & a & b & c & d \\
+g & f & a & b & c \\
+h & g & f & a & b \\
+i & h & g & f & a 
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+y_1 \\ y_2 \\ y_3 \\ y_4 \\ y_5 \\
+\end{bmatrix}
+$$
+
+I couldn't this in any crate.
 In the end, I found SciPy's [Cython implementation](https://github.com/scipy/scipy/blob/92d2a8592782ee19a1161d0bf3fc2241ba78bb63/scipy/linalg/_solve_toeplitz.pyx)
 and asked Claude to translate it into Rust, which it [had no problem doing](https://github.com/vvolhejn/sine_wave_speech/blob/472d41c16c1b6114ab6ec4ed08032986913f4df2/wasm_realtime_sws/src/linear_algebra.rs#L45).
 
@@ -199,7 +223,19 @@ Alas, I was wrong.
 In Python, you'd call `np.roots()`.
 If we look [under the hood](https://github.com/numpy/numpy/blob/v2.1.0/numpy/lib/_polynomial_impl.py#L163-L253), we see that it finds the roots by computing the eigenvalues of a [special matrix](https://en.wikipedia.org/wiki/Companion_matrix) derived from the polynomial.
 This _companion matrix_ has the property that its eigenvalues are exactly the roots of the polynomial.
+For a polynomial $$c_0 + c_1x + \cdots + c_{n-1}x^{n-1} + x^n$$, it's defined as
 
+$$
+C(p)=\begin{bmatrix}
+0 & 0 & \dots & 0 & -c_0 \\
+1 & 0 & \dots & 0 & -c_1 \\
+0 & 1 & \dots & 0 & -c_2 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \dots & 1 & -c_{n-1}
+\end{bmatrix}.
+$$
+
+So I needed either a root-finding algorithm, or an algorithm for computing eigenvalues; either would do the job.
 I searched for "rust polynomial roots", "rust polynomial", "rust eigenvalues" etc. until
 I found [something](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/eig/trait.Eig.html) in `ndarray_linalg`.
 Unfortunately, I couldn't make it find complex eigenvalues, and the documentation didn't help.
@@ -207,8 +243,8 @@ By the way, be sure not to confuse the [`ndarray_linalg`](https://rust-ndarray.g
 There are a [few](https://docs.rs/nalgebra-lapack/latest/nalgebra_lapack/struct.Eigen.html)
 [alternatives](https://docs.rs/eigenvalues/latest/eigenvalues/) that I also discarded for one reason or another.
 
-After more searching than I thought I'd need, I struck gold: the [`nalgebra`](https://docs.rs/nalgebra/latest/nalgebra/) crate for linear algebra.
-Amazing! There is a [`.complex_eigenvalues()`](https://docs.rs/nalgebra/latest/nalgebra/base/struct.Matrix.html#method.complex_eigenvalues) method that does exactly what I need,
+After more searching than I thought I'd need, I struck gold in the form of the [`nalgebra`](https://docs.rs/nalgebra/latest/nalgebra/) crate.
+Amazing! It has a [`.complex_eigenvalues()`](https://docs.rs/nalgebra/latest/nalgebra/base/struct.Matrix.html#method.complex_eigenvalues) method that does exactly what I need,
 and a lot more linear algebra goodies too.
 
 Not so fast though: you can't call this method on your `Array2D` because `nalgebra` does _not_ use `ndarray` under the hood.
@@ -224,6 +260,11 @@ pub fn find_roots(coefs: ArrayView1<f32>) -> Array1<Complex<f32>> {
 }
 ```
 
-_More coming soon._
+It's not pretty, but it does the job.
+The Rust community maintains a site called [Are we learning yet](https://www.arewelearningyet.com/)
+where they track the state of Rust's machine learning/scientific computing ecosystem.
+Currently, it says "It's ripe for experimentation, but the ecosystem isn't very complete yet".
+
+I agree.
 
 <!-- the iphone silence issue -->
