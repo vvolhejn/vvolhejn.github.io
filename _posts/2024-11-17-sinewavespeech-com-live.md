@@ -28,6 +28,8 @@ In this one, I'll go over the project from different angles, from least to most 
 
 > I can already read the criticism, that 'there's no active EQ, no pickup this, it's not versatile'. \*You're\* not versatile.
 
+[![](/assets/images/sine-wave-speech/joe-dart-bass.jpg)](https://youtu.be/9eOF7t4HgjE?t=49)
+
 That's Vulfpeck band leader Jack Stratton talking about their single-knob [Joe Dart bass guitar](https://youtu.be/9eOF7t4HgjE?t=49).
 Jack is defending the choice of having only a simple volume knob rather than multiple knobs that would allow you to fine-tune the tone of the bass.
 
@@ -60,7 +62,37 @@ If enough people complain about one of these things missing, I might still add i
 The way to keep things simple could be adding a simple/advanced mode trigger,
 hiding the more complicated things under advanced mode.
 
-# Code
+## The scale slider
+
+One particularity of the design is the "scale" slider, which lets you select how strongly the notes get quantized – a kind of autotune.
+In a regular autotune-like application, you typically have two dimensions to control:
+which notes you want to snap to (G minor, A major pentatonic...), and how strongly to pull the signal towards these notes.
+
+I wanted something simpler: a single slider that goes from "out of tune" to "in tune".
+This is what I came up with:
+
+{% include figure image_path="/assets/images/sine-wave-speech/quantization_plot.svg" alt="Plot of how notes get quantized based on the scale slider" caption="
+How different notes get quantized depending on the value of the \"Scale\" slider.
+" %}
+
+By moving the slider, you increase the strength of the quantization: notice how the input frequencies cluster get pulled to the frequencies of musical notes.
+
+But simultaneously, this changes the set of notes we're snapping to, from chromatic through diatonic to pentatonic.
+A more restrictive set of notes like the pentatonic means that they'll sound good together no matter what you play.
+
+Put simply, the chromatic scale is any of the 12 notes you can play on a piano,
+a diatonic scale means you only play the white keys,
+and a pentatonic scale means only the black keys.
+In our case, the pentatonic is transposed "to the white keys" so that it becomes a subset of the diatonic scale.
+
+
+I like this single-slider simplification, but it does have one issue:
+if you set the slider to something between diatonic and pentatonic, some frequencies will not correspond to any note.
+This doesn't happen if you set it exactly to diatonic.
+That means that in some cases, increasing the slider can make the output sound more dissonant:
+a tradeoff I'm willing to live with.
+
+# The plan
 
 In [the first iteration](https://sinewavespeech.com/explanation/) of the project, I implemented the effect in Python by translating [Matlab code from the 90s](https://github.com/vvolhejn/sine_wave_speech/tree/main/matlab_code_archive) that I found on the internet.
 This time, I wanted everybody to be able to transform their voice without needing to write any code, straight from the browser.
@@ -107,6 +139,9 @@ You also need to somehow pass the wasm code to the worklet, because you can't im
 The whole thing was a headache,
 but luckily Peter Suggate who wrote [the tutorial I used as a reference](https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio)
 had already figured out most of the sharp bits.
+
+There was just one other issue that I banged my head against for two days:
+
 
 # Going real-time with Rust
 
@@ -179,7 +214,9 @@ In particular, Python's scientific computing ecosystem is much more mature than 
 In Rust's defense, linear algebra routines are not the selling point of the language.
 Nevertheless, I had to jump through more hoops than I expected.
 
-## [Situation: there are 14 competing standards](https://xkcd.com/927/)
+{% include figure image_path="/assets/images/sine-wave-speech/xkcd-927.png" alt="Situation: there are 14 competing standards" caption="
+The ever-relevant [xkcd 927](https://xkcd.com/927/).
+" %}
 
 When you think about it, NumPy does a lot.
 At its core, there is the n-dimensional array and the convenient interface for vectorized arithmetic, broadcasting and indexing.
