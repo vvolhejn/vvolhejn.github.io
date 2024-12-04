@@ -22,7 +22,7 @@ About a year before this project, I made [sinewavespeech.com/explanation/](https
 which demonstrates the effect on a pre-sinewaved recording.
 You can read more about that in [this post]({% post_url 2023-08-21-sinewavespeech-com %}).
 
-In this one, I'll go over the project from different angles, from least to most technical: The UX, the high-level code architecture, and finally, my impressions of Rust for scientific computing.
+In this one, I'll go over the project from different angles, from least to most technical: The UX, the [high-level architecture](#going-real-time-with-rust), [strategies for translating code you don't understand](#how-to-translate-code-you-dont-understand), and finally, [my impressions of Rust for scientific computing](#rust-is-not-there-yet).
 
 # UX design
 
@@ -104,13 +104,13 @@ The audio effect itself would be written in Rust and [compiled into WebAssembly]
 
 I used this [tutorial on pitch detection via Rust+wasm](https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio) as a starting point.
 
-# Web Audio API
+## Web Audio API
 
 The [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) is a relatively recent system for controlling audio on the web.
 It's powerful: you can define an arbitrary graph of audio nodes that create, process, and receive audio, just like you would in a digital audio workstation
 or in something like [Max](https://en.wikipedia.org/wiki/Max_(software)).
 
-Our graph is fairly simple. Audio flows into the Sine Wave Speech (SWS) processor either directly from the microphone,
+Our graph is fairly simple. Audio flows into the Sine Wave Speech processor either directly from the microphone,
 or from an audio buffer that a user can record first and then loop.
 That's particularly handy if you don't have headphones, because you'd get a feedback loop if you used real-time input.
 
@@ -118,7 +118,7 @@ That's particularly handy if you don't have headphones, because you'd get a feed
 flowchart TD
   microphone[Microphone]
   recorded[Recorded audio]
-  sws[SWS processor]
+  sws[Sine wave speech processor]
   output[Output]
   microphone -->|Record| recorded
   recorded -->|Playback| sws
@@ -131,9 +131,27 @@ it explicitly controls separate [`OscillatorNode`](https://developer.mozilla.org
 It would've been possible to do that in the live version too, but I thought it'd be easier to handle the whole synthesis in Rust directly
 so that the logic is not scattered between Rust and TypeScript.
 
-The SWS processor can run our Rust code in a separate thread using an [`AudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet).
+The sine wave speech processor can run our Rust code in a separate thread using an [`AudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet).
 Worklets are wild. You tell a worklet what code to run by calling `audioWorklet.addModule()` and passing in _a URL of a JS file_.
 Since this bypasses the regular import mechanism, it doesn't play nice with bundling, not to mention TypeScript.
+
+```mermaid
+flowchart TB
+    subgraph WORKLET_THREAD ["Worklet Thread"]
+        A["WASM-compiled Rust code"]
+        B["sineWaveSpeechProcessor.ts"]
+        B -->|calls| A
+    end
+
+    subgraph MAIN_THREAD ["Main Thread"]
+        C["LiveApp.vue"]
+        D["sineWaveSpeechNode.ts"]
+        
+        C -->|uses as a Web Audio node| D
+    end
+
+    B <--> D
+```
 
 You also need to somehow pass the wasm code to the worklet, because you can't import it from the worklet (AFAIK).
 The whole thing was a headache,
@@ -155,7 +173,7 @@ I chose to use Rust for a few reasons.
   situation isn't much better there – but it's an argument against JavaScript.
 - Learning: I had never worked with Rust before this so I wanted to see what the hype is about. I also hadn't used WebAssembly.
 
-# I'm sure this works even though I'm not sure why
+# How to translate code you don't understand
 
 As mentioned [the previous post]({% post_url 2023-08-21-sinewavespeech-com %}#how-does-this-work-technically),
 my Sine Wave Speech code is based on a Matlab implementation from the 90s.
