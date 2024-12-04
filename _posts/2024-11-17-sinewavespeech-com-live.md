@@ -158,8 +158,26 @@ The whole thing was a headache,
 but luckily Peter Suggate who wrote [the tutorial I used as a reference](https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio)
 had already figured out most of the sharp bits.
 
-There was just one other issue that I banged my head against for two days:
+## The mysterious iPhone bug
 
+There was just one other issue that I banged my head against for two days:
+I got no sound when trying to play pre-recorded audio on my iPhone.
+If I recorded a clip and then played it back, it worked fine.
+It was just the default clip that plays when you directly press "Play" that didn't make any sound.
+There was no error message to be found anywhere, and the visualization worked as expected.
+
+This confounded me for the longest time, until I found the issue by complete accident I wanted to play a DJ mix from SoundCloud.
+I couldn't get SoundCloud to work with my WiFi-based speaker, so I put on my headphones to listen to it.
+I went back to debugging and realized the sound suddenly started working!
+
+After that, I quickly realized that the source of the issue was that I had my do-not-disturb switch on, as I always do.
+In do-not-disturb mode, iOS tries to prevent the phone from accidentally making loud noises.
+So if you put on headphones, it's ok.
+If you give the website microphone access to record something, it's also ok because you're aware you're doing audio-related things.
+But if you just press the "Play" button, no sound will come out.
+
+Of course, it was only after I fixed the bug myself that I managed to find this [StackOverflow post](https://stackoverflow.com/questions/76291413/no-sound-on-ios-only-web-audio-api)
+where someone had the same issue.
 
 # Going real-time with Rust
 
@@ -174,6 +192,8 @@ I chose to use Rust for a few reasons.
 - Learning: I had never worked with Rust before this so I wanted to see what the hype is about. I also hadn't used WebAssembly.
 
 # How to translate code you don't understand
+
+![](/assets/images/sine-wave-speech/chinese-room.webp)
 
 As mentioned [the previous post]({% post_url 2023-08-21-sinewavespeech-com %}#how-does-this-work-technically),
 my Sine Wave Speech code is based on a Matlab implementation from the 90s.
@@ -321,5 +341,3 @@ where they track the state of Rust's machine learning/scientific computing ecosy
 Currently, it says "It's ripe for experimentation, but the ecosystem isn't very complete yet".
 
 I agree.
-
-<!-- the iphone silence issue -->
