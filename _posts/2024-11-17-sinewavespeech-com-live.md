@@ -43,19 +43,19 @@ I ended up with five parameters:
 - Number of waves: decompose into this many sine waves.
 - Scale: whether the frequencies get snapped to musical notes, and how restrictive the scale is. More on that later.
 - Gain: adjust the loudness.
-- Depth: decrease the frequency of the lower sine waves to cover more of the frequency spectrum.
+- Depth: decrease the frequency of the lower sine waves to get a fuller sound.
 
-Additionally, there some features under the hood to prevent you from making something truly awful-sounding.
-I compress the dynamic range of the resulting audio is compressed so that there aren't huge differences in loudness.
+Additionally, there some features under the hood to keep you from making it sound awful.
+I compress the dynamic range of the resulting audio so that there aren't huge differences in loudness.
 I also adjust the loudness based on the frequency of the sine wave to compensate for the fact that humans
 [perceive certain frequencies to be louder](https://en.wikipedia.org/wiki/A-weighting).
 
 Admittedly, my five knobs are a far cry from the one-knob ideal of the Joe Dart bass.
 Dear reader, in my defense, I did resist the temptation of adding any of the following:
-- Using other waves than just sines, like square or triangle waves
+- The option to use other wave shapes, like squares or triangles
 - Allowing to record for longer periods of time
 - Uploading audio files
-- Download the processed audio
+- Downloading the processed audio
 - Trimming the recording to a shorter passage
 
 If enough people complain about one of these things missing, I might still add it.
@@ -72,7 +72,7 @@ I wanted something simpler: a single slider that goes from "out of tune" to "in 
 This is what I came up with:
 
 {% include figure image_path="/assets/images/sine-wave-speech/quantization_plot.svg" alt="Plot of how notes get quantized based on the scale slider" caption="
-How different notes get quantized depending on the value of the \"Scale\" slider.
+How notes get quantized depending on the value of the \"Scale\" slider.
 " %}
 
 By moving the slider, you increase the strength of the quantization: notice how the input frequencies cluster get pulled to the frequencies of musical notes.
@@ -89,16 +89,16 @@ In our case, the pentatonic is transposed "to the white keys" so that it becomes
 I like this single-slider simplification, but it does have one issue:
 if you set the slider to something between diatonic and pentatonic, some frequencies will not correspond to any note.
 This doesn't happen if you set it exactly to diatonic.
-That means that in some cases, increasing the slider can make the output sound more dissonant:
-a tradeoff I'm willing to live with.
+That means that in some cases, increasing the slider can make the output sound more dissonant,
+but it's a tradeoff I'm willing to live with.
 
 # The plan
 
 In [the first iteration](https://sinewavespeech.com/explanation/) of the project, I implemented the effect in Python by translating [Matlab code from the 90s](https://github.com/vvolhejn/sine_wave_speech/tree/main/matlab_code_archive) that I found on the internet.
 This time, I wanted everybody to be able to transform their voice without needing to write any code, straight from the browser.
-Sadly, it's not easy to run Python in the browser and that meant that I had to translate the code once again.
+Sadly, it's not easy to run Python in the browser and that meant that I had to translate the code a second time.
 
-The plan was: Use the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) to get detailed control over sound in the browser,
+The plan was to use the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) to get detailed control over sound in the browser,
 using an [AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet) that would run the sine wave speech effect in a separate thread.
 The audio effect itself would be written in Rust and [compiled into WebAssembly](https://rustwasm.github.io/book/) so that it can run in the browser.
 
@@ -110,7 +110,7 @@ The [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_A
 It's powerful: you can define an arbitrary graph of audio nodes that create, process, and receive audio, just like you would in a digital audio workstation
 or in something like [Max](https://en.wikipedia.org/wiki/Max_(software)).
 
-Our graph is fairly simple. Audio flows into the Sine Wave Speech processor either directly from the microphone,
+Our graph is fairly simple. Audio flows into the sine wave speech processor either directly from the microphone,
 or from an audio buffer that a user can record first and then loop.
 That's particularly handy if you don't have headphones, because you'd get a feedback loop if you used real-time input.
 
@@ -166,14 +166,15 @@ If I recorded a clip and then played it back, it worked fine.
 It was just the default clip that plays when you directly press "Play" that didn't make any sound.
 There was no error message to be found anywhere, and the visualization worked as expected.
 
-This confounded me for the longest time, until I found the issue by complete accident I wanted to play a DJ mix from SoundCloud.
-I couldn't get SoundCloud to work with my WiFi-based speaker, so I put on my headphones to listen to it.
+This confounded me for the longest time, until I found the issue by complete accident when I tried to play a DJ mix from SoundCloud.
+I couldn't get SoundCloud to work with my WiFi-based speaker, so I put my headphones on to listen to it.
 I went back to debugging and realized the sound suddenly started working!
 
-After that, I quickly realized that the source of the issue was that I had my do-not-disturb switch on, as I always do.
+After that, I quickly found that the source of the issue was that I had my do-not-disturb switch on.
 In do-not-disturb mode, iOS tries to prevent the phone from accidentally making loud noises.
 So if you put on headphones, it's ok.
-If you give the website microphone access to record something, it's also ok because you're aware you're doing audio-related things.
+If you give the website microphone access, it's also ok because you're aware you're doing audio-related things
+– that's why the sound works if you first record something and then play it back.
 But if you just press the "Play" button, no sound will come out.
 
 Of course, it was only after I fixed the bug myself that I managed to find this [StackOverflow post](https://stackoverflow.com/questions/76291413/no-sound-on-ios-only-web-audio-api)
@@ -184,7 +185,7 @@ where someone had the same issue.
 <!-- https://www.toptal.com/webassembly/webassembly-rust-tutorial-web-audio -->
 
 I chose to use Rust for a few reasons.
-- Efficiency: I wasn't sure how computationally expensive the effect would be, and using JavaScript would mean risking that it ends up being too slow on phones etc.
+- Efficiency: I wasn't sure how computationally expensive the effect would be, and using JavaScript would mean risking that it ends up being too slow on mobile devices.
 - Libraries: JavaScript's scientific computing ecosystem is much less mature
   than Python's, so I'd have to write some functions which I'd get for free in
   Python. That's not really an argument in favor of Rust – and we'll see the
@@ -202,7 +203,7 @@ With some help from Copilot, I translated it into Python, the language I'm most 
 This iteration was a new challenge:
 I had never used Rust before so it would be very difficult for me to know if the code is correct.
 This is where unit tests come in particularly handy.
-For simple functions like upsampling a signal, it's easy to write unit tests and figure out what the expected output is.
+For simple functions like upsampling a signal, it's easy to figure out what the expected output is and write a corresponding test.
 But it's a lot trickier to write a unit test for, let's say, a function that returns the [Linear Predictive Coding](https://en.wikipedia.org/wiki/Linear_predictive_coding) coefficients of order $$p$$ on Hann-windowed frames of audio.
 Especially if, like me, you've never taken a DSP class and you only have a loose idea of what that all actually means.
 
@@ -235,7 +236,7 @@ fn test_fit_lpc() {
 ```
 
 Why do we need to allow for an error in the calculations if we want the Rust code to do _exactly_ the same thing as the Python code?
-There are multiple separate reasons:
+For several separate reasons:
 - I used float32 in Rust and float64 in Python, so there's a precision mismatch.
 - Some subroutines, like finding the eigenvalues of a matrix, are outsourced to the linear algebra libraries of the respective languages, and their implementations will be different.
 - Floating-point arithmetic [is not associative](https://stackoverflow.com/questions/10371857/is-floating-point-addition-and-multiplication-associative),
@@ -252,17 +253,13 @@ In particular, Python's scientific computing ecosystem is much more mature than 
 In Rust's defense, linear algebra routines are not the selling point of the language.
 Nevertheless, I had to jump through more hoops than I expected.
 
-{% include figure image_path="/assets/images/sine-wave-speech/xkcd-927.png" alt="Situation: there are 14 competing standards" caption="
-The ever-relevant [xkcd 927](https://xkcd.com/927/).
-" %}
-
 When you think about it, NumPy does a lot.
 At its core, there is the n-dimensional array and the convenient interface for vectorized arithmetic, broadcasting and indexing.
-But there's so much on top that doesn't _strictly_ have to do with the array type: random number generators, linear algebra routines, Fourier transforms, and more.
+But there's so much on top of that: random number generators, linear algebra routines, Fourier transforms, and more.
 
 In Rust, there is the [`ndarray`](https://docs.rs/ndarray/latest/ndarray/) crate, which provides n-dimensional arrays, but not much else.
 The excitement of discovering that there is a [`ndarray::linalg` module](https://docs.rs/ndarray/0.16.1/ndarray/linalg/index.html) goes away quickly when you realize the only thing it implements is matrix multiplication.
-It makes sense in theory: `ndarray` can provide the data type and others can build their scientific tools upon it, similar to how [SciPy](https://scipy.github.io/devdocs/dev/) is built on top of NumPy, but with a better separation of concerns.
+It makes sense in theory: `ndarray` can provide the data type and others can build their scientific tools upon it, similar to how [SciPy](https://scipy.github.io/devdocs/dev/) is built on top of NumPy, but with a clearer separation of concerns.
 
 So where are these scientific computing crates that build on top of `ndarray`? Let's have a look. I needed to replace two functions from NumPy/SciPy.
 
@@ -293,11 +290,11 @@ and asked Claude to translate it into Rust, which it [had no problem doing](http
 
 The other thing I needed was simple: finding the complex roots of a polynomial.
 Compared to the niche Toeplitz system, I was sure this'd be a walk in the park.
-Alas, I was wrong.
+It was not.
 
 In Python, you'd call `np.roots()`.
-If we look [under the hood](https://github.com/numpy/numpy/blob/v2.1.0/numpy/lib/_polynomial_impl.py#L163-L253), we see that it finds the roots by computing the eigenvalues of a [special matrix](https://en.wikipedia.org/wiki/Companion_matrix) derived from the polynomial.
-This _companion matrix_ has the property that its eigenvalues are exactly the roots of the polynomial.
+If we look [under the hood](https://github.com/numpy/numpy/blob/v2.1.0/numpy/lib/_polynomial_impl.py#L163-L253), we see that it finds the roots by computing the eigenvalues of a special matrix derived from the polynomial.
+This [_companion matrix_](https://en.wikipedia.org/wiki/Companion_matrix) has the property that its eigenvalues are exactly the roots of the polynomial.
 For a polynomial $$c_0 + c_1x + \cdots + c_{n-1}x^{n-1} + x^n$$, it's defined as
 
 $$
@@ -311,14 +308,17 @@ C(p)=\begin{bmatrix}
 $$
 
 So I needed either a root-finding algorithm, or an algorithm for computing eigenvalues; either would do the job.
-I searched for "rust polynomial roots", "rust polynomial", "rust eigenvalues" etc. until
-I found [something](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/eig/trait.Eig.html) in `ndarray_linalg`.
-Unfortunately, I couldn't make it find complex eigenvalues, and the documentation didn't help.
-By the way, be sure not to confuse the [`ndarray_linalg`](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/index.html) crate with [`ndarray::linalg`](https://docs.rs/ndarray/latest/ndarray/linalg/index.html), mentioned earlier.
+First, I found [something](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/eig/trait.Eig.html) in the `ndarray_linalg` crate.
+Unfortunately, I couldn't make it find _complex_ eigenvalues, and the documentation didn't help.
+By the way, be sure not to confuse [`ndarray_linalg`](https://rust-ndarray.github.io/ndarray-linalg/ndarray_linalg/index.html) with [`ndarray::linalg`](https://docs.rs/ndarray/latest/ndarray/linalg/index.html), mentioned earlier.
 There are a [few](https://docs.rs/nalgebra-lapack/latest/nalgebra_lapack/struct.Eigen.html)
-[alternatives](https://docs.rs/eigenvalues/latest/eigenvalues/) that I also discarded for one reason or another.
+[alternatives](https://docs.rs/eigenvalues/latest/eigenvalues/) that I also tried and discarded for one reason or another.
 
-After more searching than I thought I'd need, I struck gold in the form of the [`nalgebra`](https://docs.rs/nalgebra/latest/nalgebra/) crate.
+{% include figure image_path="/assets/images/sine-wave-speech/xkcd-927.png" alt="Situation: there are 14 competing standards" caption="
+The ever-relevant [xkcd 927](https://xkcd.com/927/).
+" %}
+
+After more searching than you'd think, I found the mature-ish [`nalgebra`](https://docs.rs/nalgebra/latest/nalgebra/) crate.
 Amazing! It has a [`.complex_eigenvalues()`](https://docs.rs/nalgebra/latest/nalgebra/base/struct.Matrix.html#method.complex_eigenvalues) method that does exactly what I need,
 and a lot more linear algebra goodies too.
 
