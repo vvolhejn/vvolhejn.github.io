@@ -53,6 +53,9 @@ author:
 
   # When updating this list, also update about.md
   links:
+    - label: "Patreon"
+      icon: "fab fa-fw fa-patreon"
+      url: "https://www.patreon.com/vvolhejn"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/vvolhejn"

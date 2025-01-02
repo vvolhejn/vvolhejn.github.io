@@ -14,6 +14,7 @@ header:
 Hi! I'm Václav \[vah-tslav\], but my friends usually call me Vašek \[vashek\]. Or Váša. Czech names are weird like that.
 
 <!-- When updating this list, also update _config.yml -->
+* [Patreon](https://www.patreon.com/vvolhejn)  
 * [GitHub](https://github.com/vvolhejn)
 * [X/Twitter](https://x.com/vvolhejn)
 * [TikTok](https://www.tiktok.com/@vvolhejn)
