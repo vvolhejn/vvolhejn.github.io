@@ -32,15 +32,18 @@ where I got more interested in machine learning (like many CS students).
 For my Master's degree I went to ETH Zürich to study both ML and algorithms further.
 I handed in [my thesis]({% post_url 2022-09-01-msc-thesis %}) in the summer of 2022.
 After that, I started working at [Lakera](https://www.lakera.ai/),
-an AI security startup here in Zürich.
+an AI security startup in Zürich.
+In March 2025, I moved to Paris to join [Kyutai](https://kyutai.org/), a non-profit open science AI lab with a focus on audio research.
 
 I also really like music. What I mean by that is mainly that I follow a lot of
 bands, read/watch album reviews and own several t-shirts with band names on
-them. My favorite genre has to be [British sad boys](https://youtu.be/QZ33rSumeEc?t=46),
-my absolute favorites being Radiohead, The Smiths, King Krule and Black Country, New Road.
-I also like various flavors of pop. From least to most weird: Alvvays, Charli XCX, Caroline Polachek, Mat213, 100 gecs, Jockstrap, LUCY.
-Every now and then I have an electronic phase (Aphex Twin, Against All Logic) or a hip-hop phase (Playboi Carti, JPEGMAFIA, Ski Aggu, Tyler the Creator).
-I also play bass guitar and, to some extent, the keys.
+them. Here are the artists I particularly enjoyed in each of the past few years:
+- 2020: 100 Gecs, King Krule, The Strokes
+- 2021: Black Country New Road, Squid, Daniel Johnston
+- 2022: Black Country New Road, Jockstrap, Alex G, Weyes
+- 2023: 100 Gecs, Alvvays, JPEGMAFIA + Danny Brown
+- 2024: Charli XCX, Aphex Twin, LUCY (Cooper B. Handy), Ski Aggu
+- 2025: Saya Gray, Smerz
 
 On this webpage, I wanted to highlight the projects that I've done over the years,
 especially the ones that I did for fun, without being paid for it – not that the two are mutually exclusive.
