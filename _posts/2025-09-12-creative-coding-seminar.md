@@ -21,19 +21,33 @@ _Beloslava Malakova, Boris Gachevski, Dion Aliu, Nea Metohu_
 
 Neu
 
+## QR Dodecahedron
+
+_Alexandru Turculet, Tudor Dochia_
+
+https://eaf-cret-cod.vercel.app/
+
 ## Gesture control for music
 
 _Benedikt Meier, Elias Koschier_
 
 [GitHub repo](https://github.com/B3neM31/LiDAR-Music-Control)
 
-The initial idea was to allow the user to control the volume 
+Gesture control for music.
+Pinch to play/pause, swipe to switch tracks, and most importantly: clap to rick-roll.
 
-## QR Dodecahedron
+<div style="display: flex; justify-content: center;">
+  <video controls width="80%">
+    <source src="/assets/2025-09-12-creative-coding-seminar/gesture-control.mp4" type="video/mp4" />
+  </video>
+</div>
 
-_Alexandru Turculet, Tudor Dochia_
+Technically, this uses the iPhone's lidar sensor combined with ARKit.
+The core of the project is custom gesture detection built on top of the hand tracking provided by ARKit.
 
-https://eaf-cret-cod.vercel.app/
+Benedikt is a law student and has never coded, and Elias has never developed an iOS app either, so I'm impressed at how well they handled the project.
+Naturally, the app is largely vibe coded, which I think makes total sense.
+They picked a well-scoped project, knew what the outcome should be, and managed to use available tools to get there.
 
 ## Bots for Liar's Dice
 
