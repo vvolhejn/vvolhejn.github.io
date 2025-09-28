@@ -18,12 +18,13 @@ Thirteen students aged 17–21 joined and created a bunch of fun things:
 
 _Beloslava Malakova, Boris Gachevski, Dion Aliu, Nea Metohu_
 <br>
-[GitHub repo](https://github.com/beloslavamalakova/eaf-segment)
+[Site](https://segment-craft-eaf.lovable.app/), [GitHub repo](https://github.com/beloslavamalakova/eaf-segment)
 
 Semantic replacement of image parts using the [Segment Anything](https://segment-anything.com/) model.
 The main test case was this photo of a pizza.
 Segment Anything identifies the exact boundaries of objects – in this case, we take the pepperonis –
 and then they are replaced by unrelated images, like balls.
+Check out the other examples at [the demo site](https://segment-craft-eaf.lovable.app/) Boris made.
 
 {% include figure image_path="/assets/2025-09-12-creative-coding-seminar/pizza_decomposed.png"
   alt="A pepperoni pizza where the pepperonis are replaced with basketballs and footballs"
