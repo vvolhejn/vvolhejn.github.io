@@ -13,13 +13,39 @@ organized by the [European Academic Foundation](https://europeanacademicfoundati
 
 Thirteen students aged 17–21 joined and created a bunch of fun things:
 
-## Weird pizza
+## Weird pizza with Segment Anything
 
 _Beloslava Malakova, Boris Gachevski, Dion Aliu, Nea Metohu_
 
 [GitHub repo](https://github.com/beloslavamalakova/eaf-segment)
 
-Neu
+Semantic replacement of image parts using the [Segment Anything](https://segment-anything.com/) model.
+The main test case was this photo of a pizza.
+Segment Anything identifies objects (in this case, we look at pepperonis),
+and then they're replaced from a set of replacement images.
+
+{% include figure image_path="/assets/2025-09-12-creative-coding-seminar/pizza_decomposed.png"
+  alt="A pepperoni pizza where the pepperonis are replaced with basketballs and footballs"
+  caption="An avant-garde pizza flavor." %}
+
+The broader idea was to make "automatic collages" by taking images, breaking them up into parts using SAM
+and then replacing them with similar-shaped/similar-looking images from the [Segment Anything dataset](https://segment-anything.com/dataset/index.html).
+I attempted something like this two years ago but found it tricky to create a good shape-based lookup.
+The group's solution was to sidestep the problem of finding similar shapes by stretching the replacement images to match.
+
+The stretching, designed by Dion, is interesting in its own right.
+It takes the texture from one image and fits it into the shape of another.
+It works by converting each shape into normalized polar coordinates,
+where the distance is normalized to [0, 1] based on where the furthest point is in that specific angle.
+This won't work for shapes where you can't "see everything" from the center, such as U-shaped objects,
+but it produces fascinating results when it does work:
+
+{% include figure image_path="/assets/2025-09-12-creative-coding-seminar/dionstretch-examples.png"
+  alt="A car distorted into a bottle shape, and a basketball distorted into a car shape."
+  caption="Carbottle and basketcar." %}
+
+Combined with the pepperoni replacement algorithms, we get Dalí-esque surrealist melted footballs on top of a pizza.
+Yum.
 
 ## QR Dodecahedron
 
